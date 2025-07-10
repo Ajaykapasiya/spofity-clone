@@ -1,3 +1,7 @@
 @import "tailwindcss";
 
+::-webkit-scrollbar{
+  display: none;
+}
+
 /* Custom styles for your Spotify clone can go here */
