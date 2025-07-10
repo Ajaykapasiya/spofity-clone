@@ -1,6 +1,6 @@
 import React from 'react'
 
-const SongItem = (image,name,desc,id) => {
+const SongItem = ({image, name, desc, id}) => {
   return (
     <div className='min-w-[180px] px-3 p-2 rounded cursor-pointer hover:bg-[#ffffff26]'>
       <img className='rounded' src={image} alt="" />
