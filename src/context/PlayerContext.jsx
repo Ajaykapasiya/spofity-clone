@@ -37,22 +37,65 @@ const PlayerContextProvider = (props) => {
     setPlayStatus(true);
   }
 
+  const previous = async () => {
+    if(track.id > 0) {
+      await setTrack(songsData[track.id - 1]);
+      await audioRef.current.play();
+      setPlayStatus(true);
+    }
+  }
+
+  const next = async () => {
+    if(track.id < songsData.length - 1) {
+      await setTrack(songsData[track.id + 1]);
+      await audioRef.current.play();
+      setPlayStatus(true);
+    }
+  }
+
+  const seekSong = async (e) => {
+    audioRef.current.currentTime = ((e.nativeEvent.offsetX / seekBg.current.offsetWidth)*audioRef.current.duration)
+  }
+
   useEffect(() => {
-    setTimeout(() => {
-      audioRef.current.ontimeupdate = () => {
-        seekBar.current.style.width = (Math.floor(audioRef.current.currentTime/audioRef.current.duration*100))+"%";
-        setTime({
-          currentTime: {
-            second: Math.floor(audioRef.current.currentTime % 60),
-            minute: Math.floor(audioRef.current.currentTime / 60)
-          },
-          totalTime: {
-            second: Math.floor(audioRef.current.duration % 60),
-            minute: Math.floor(audioRef.current.duration / 60)
+    const audio = audioRef.current;
+    
+    if (audio) {
+      const updateTime = () => {
+        // Check if all required refs exist and duration is valid
+        if (audio.duration && !isNaN(audio.duration)) {
+          // Update seek bar width if seekBar ref exists
+          if (seekBar.current) {
+            const progress = (audio.currentTime / audio.duration) * 100;
+            seekBar.current.style.width = Math.floor(progress) + "%";
           }
-        })
-      }
-    }, 1000);
+          
+          // Update time state with proper formatting
+          setTime({
+            currentTime: {
+              second: Math.floor(audio.currentTime % 60),
+              minute: Math.floor(audio.currentTime / 60)
+            },
+            totalTime: {
+              second: Math.floor(audio.duration % 60),
+              minute: Math.floor(audio.duration / 60)
+            }
+          });
+        }
+      };
+
+      // Set up event listeners
+      audio.ontimeupdate = updateTime;
+      audio.onloadedmetadata = updateTime; // This ensures we get duration when audio loads
+      
+      // Cleanup function
+      return () => {
+        if (audio) {
+          audio.ontimeupdate = null;
+          audio.onloadedmetadata = null;
+        }
+      };
+    }
   }, []);
 
   const contextValue = {
@@ -67,7 +110,10 @@ const PlayerContextProvider = (props) => {
     setTime,
     play,
     pause,
-    playWithId
+    playWithId,
+    previous,
+    next,
+    seekSong
   };
 
   return (
