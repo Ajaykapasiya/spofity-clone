@@ -62,15 +62,12 @@ const PlayerContextProvider = (props) => {
     
     if (audio) {
       const updateTime = () => {
-        // Check if all required refs exist and duration is valid
         if (audio.duration && !isNaN(audio.duration)) {
-          // Update seek bar width if seekBar ref exists
           if (seekBar.current) {
             const progress = (audio.currentTime / audio.duration) * 100;
             seekBar.current.style.width = Math.floor(progress) + "%";
           }
           
-          // Update time state with proper formatting
           setTime({
             currentTime: {
               second: Math.floor(audio.currentTime % 60),
@@ -84,11 +81,11 @@ const PlayerContextProvider = (props) => {
         }
       };
 
-      // Set up event listeners
+     
       audio.ontimeupdate = updateTime;
-      audio.onloadedmetadata = updateTime; // This ensures we get duration when audio loads
+      audio.onloadedmetadata = updateTime; 
       
-      // Cleanup function
+     
       return () => {
         if (audio) {
           audio.ontimeupdate = null;
