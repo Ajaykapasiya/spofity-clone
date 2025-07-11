@@ -11,32 +11,42 @@ const PlayerContextProvider = (props) => {
   const [track, setTrack] = useState(songsData[0]);
   const [playStatus, setPlayStatus] = useState(false);
   const [time, setTime] = useState({
-    currentTime:{
-        second:0,
-        minute:0
+    currentTime: {
+      second: 0,
+      minute: 0,
     },
     totalTime: {
-        second:0,
-        minute:0
-    }
-  })
+      second: 0,
+      minute: 0,
+    },
+  });
 
   const play = () => {
     audioRef.current.play();
     setPlayStatus(true);
-  }
+  };
 
   const pause = () => {
     audioRef.current.pause();
     setPlayStatus(false);
+  };
 
-  }
-
-  useEffect(()=>{
-    setTimeout(()=>{
-
-    },1)
-  },[])
+  useEffect(() => {
+    setTimeout(() => {
+      audioRef.current.onTimeupdate = () => {
+        setTime({
+          currentTime: {
+            second: 0,
+            minute: 0,
+          },
+          totalTime: {
+            second: 0,
+            minute: 0,
+          },
+        });
+      };
+    }, 1000);
+  }, []);
 
   const contextValue = {
     audioRef,
@@ -48,9 +58,9 @@ const PlayerContextProvider = (props) => {
     setPlayStatus,
     time,
     setTime,
-    play,pause
+    play,
+    pause,
   };
-
 
   return (
     <PlayerContext.Provider value={contextValue}>
